@@ -1,0 +1,59 @@
+#pragma once
+
+#include "thread.h"
+
+#include <queue>
+#include <string>
+
+enum EventType { THREAD_ARRIVED, THREAD_DISPATCH_COMPLETED,
+  PROCESS_DISPATCH_COMPLETED, CPU_BURST_COMPLETED,
+  IO_BURST_COMPLETED, THREAD_COMPLETED, THREAD_PREEMPTED,
+  DISPATCHER_INVOKED, SIMULATION_COMPLETE};
+
+struct Event {
+  EventType type;
+  int time;
+  int pid;
+  int tid;
+};
+
+// scheduler is an interface for specific scheduling algorithms to implement
+class Scheduler {
+  private:
+    std::queue<Thread> ready;
+    std::vector<Thread> blocked;
+    Thread running;
+    CPU cpu;
+
+    Event switchToThread(Thread upNext);
+
+  public:
+    Scheduler();
+
+    // get message for dispatcher verbose output
+    std::string dispatchMessage();
+
+    // get next thread to execute on CPU
+    Event nextThread(bool verbose);
+
+    // add a new thread to the ready queue
+    void scheduleThread(Thread t);
+
+    // change status of running thread to blocked, use pid/tid to check
+    Event threadBlocked(int pid, int tid);
+
+    // change status of specified thread to ready
+    void threadReady(int pid, int tid);
+
+    // change status of running thread to complete, use pid/tid to check
+    Event threadComplete(int pid, int tid);
+
+    // preempt currently running thread with specified thread
+    void threadPreempted(int pid, int tid);
+
+    // start CPU burst after switch
+    Event startBurst(int pid, int tid);
+
+    // get next dispatch
+    Event getNextDispatch();
+};

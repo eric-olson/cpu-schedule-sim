@@ -1,0 +1,41 @@
+CSCI442 Project 2: CPU Scheduling simulator
+Eric Olson
+
+LIST OF FILES (all files have .cpp and .h elements, except main):
+
+  - cpu: simple class to simulate a CPU and hold info about currently running
+    bursts and CPU status. Keeping this in a separate class allows for possible
+    future expansion to simulate a system with multiple CPUs.
+
+  - process: class to hold information about a process and its' threads
+
+  - filehandler: handles import of files including creation of all simulation
+    objects and creation of event handler. also handles parsing of CLI flags
+
+  - event: holds most of the logic of the next-event simulation, including calls
+    to the chosen scheduler and methods to run the simulation
+
+  - thread: class to hold information about a thread and its' CPU bursts
+
+  - scheduler: parent class of all scheduler types
+
+  - fcfs, processpriority, roundrobin, custom: scheduler implementations
+
+  - main: gets flags, loads file, runs simulation
+
+
+HOURS SPENT ON PROJECT: around 30
+
+CUSTOM SCHEDULER
+  The custom scheduler is based on a multilevel feedback queue. It uses time
+  slices that increase in length as the process moves to lower queues. Any time
+  that a thread is preempted, it is demoted to a lower priority queue. This
+  scheduling algorithm optimizes response time, as the highest priority queue is
+  kept mostly free of threads with high burst times. However, statistics such as
+  turnaround time and efficiency are reduced, since threads are prone to
+  starvation and the CPU spends large amounts of time switching between threads.
+  In an attempt to decrease chance of starvation, processes will be promoted to
+  a higher queue periodically if they have not been executed for a long time.
+  Additionally, in order to prioritize high priority threads, a thread's time
+  quantum is increased proportionally to its' priority, so higher priority
+  threads will be given longer time slots.
